@@ -1,1 +1,87 @@
--- ToloHub: Combined Auto-Farm Script local player = game.Players.LocalPlayer local playerGui = player:WaitForChild("PlayerGui") -- ScreenGui local screenGui = Instance.new("ScreenGui") screenGui.Name = "ToloHub" screenGui.Parent = playerGui -- Main Frame local mainFrame = Instance.new("Frame") mainFrame.Size = UDim2.new(0, 300, 0, 400) mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200) mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) mainFrame.Parent = screenGui -- Title Label local titleLabel = Instance.new("TextLabel") titleLabel.Size = UDim2.new(1, 0, 0, 50) titleLabel.BackgroundTransparency = 1 titleLabel.Text = "ToloHub" titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255) titleLabel.TextScaled = true titleLabel.Parent = mainFrame -- Start Button local startButton = Instance.new("TextButton") startButton.Size = UDim2.new(0.8, 0, 0, 50) startButton.Position = UDim2.new(0.1, 0, 0.2, 0) startButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0) startButton.Text = "Start Auto-Farm" startButton.TextColor3 = Color3.fromRGB(255, 255, 255) startButton.TextScaled = true startButton.Parent = mainFrame -- Stop Button local stopButton = Instance.new("TextButton") stopButton.Size = UDim2.new(0.8, 0, 0, 50) stopButton.Position = UDim2.new(0.1, 0, 0.4, 0) stopButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0) stopButton.Text = "Stop Auto-Farm" stopButton.TextColor3 = Color3.fromRGB(255, 255, 255) stopButton.TextScaled = true stopButton.Parent = mainFrame -- Status Label local statusLabel = Instance.new("TextLabel") statusLabel.Size = UDim2.new(1, 0, 0, 50) statusLabel.Position = UDim2.new(0, 0, 0.8, 0) statusLabel.BackgroundTransparency = 1 statusLabel.Text = "Status: Idle" statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255) statusLabel.TextScaled = true statusLabel.Parent = mainFrame -- Farming Variables local isFarming = false local attackRange = 20 -- Adjust based on your game local islands = workspace:WaitForChild("Islands") -- Folder containing island parts/locations local currentIsland = nil -- Helper Function: Find Nearest NPC local function getNearestNPC() if not currentIsland then return nil end local nearestNPC = nil local shortestDistance = math.huge for _, npc in pairs(currentIsland.NPCs:GetChildren()) do if npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then local distance = (npc.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude if distance < shortestDistance and distance <= attackRange then nearestNPC = npc shortestDistance = distance end end end return nearestNPC end -- Helper Function: Attack NPC local function attackNPC(npc) if npc and npc:FindFirstChild("Humanoid") then while npc.Humanoid.Health > 0 and isFarming do npc.Humanoid:TakeDamage(10) -- Replace with your game's attack logic print("Attacking " .. npc.Name .. " | Remaining Health: " .. npc.Humanoid.Health) wait(0) -- Fast attacks end end end -- Helper Function: Check if NPCs are Defeated local function areNPCsDefeated() if not currentIsland then return false end for _, npc in pairs(currentIsland.NPCs:GetChildren()) do if npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then return false end end return true end -- Helper Function: Navigate to Next Island local function goToNextIsland() for _, island in ipairs(islands:GetChildren()) do if not island:GetAttribute("Cleared") then print("Traveling to " .. island.Name) player.Character.HumanoidRootPart.CFrame = island.SpawnPoint.CFrame -- Teleport to island currentIsland = island island:SetAttribute("Cleared", true) -- Mark as cleared wait(2) -- Allow NPCs to load return end end print("All islands cleared!") isFarming = false end -- Start Auto-Farming Function local function startAutoFarm() if isFarming then return end isFarming = true statusLabel.Text = "Status: Farming..." while isFarming do if not currentIsland then goToNextIsland() end local npc = getNearestNPC() if npc then attackNPC(npc) else if areNPCsDefeated() then goToNextIsland() else print("Searching for NPCs...") end end wait(0.1) -- Prevent overload end end -- Stop Auto-Farming Function local function stopAutoFarm() isFarming = false statusLabel.Text = "Status: Idle" print("Farming stopped.") end -- Button Events startButton.MouseButton1Click:Connect(startAutoFarm) stopButton.MouseButton1Click:Connect(stopAutoFarm)
+-- ToloHub: Custom Auto-Farm GUI Script
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ToloHub"
+screenGui.Parent = playerGui
+
+-- Create Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 300, 0, 400)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Title Label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 50)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "ToloHub"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextScaled = true
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.Parent = mainFrame
+
+-- Start Button
+local startButton = Instance.new("TextButton")
+startButton.Size = UDim2.new(0.8, 0, 0, 50)
+startButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+startButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+startButton.Text = "Start Auto-Farm"
+startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+startButton.TextScaled = true
+startButton.Font = Enum.Font.SourceSansBold
+startButton.Parent = mainFrame
+
+-- Stop Button
+local stopButton = Instance.new("TextButton")
+stopButton.Size = UDim2.new(0.8, 0, 0, 50)
+stopButton.Position = UDim2.new(0.1, 0, 0.4, 0)
+stopButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+stopButton.Text = "Stop Auto-Farm"
+stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopButton.TextScaled = true
+stopButton.Font = Enum.Font.SourceSansBold
+stopButton.Parent = mainFrame
+
+-- Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 50)
+statusLabel.Position = UDim2.new(0, 0, 0.8, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: Idle"
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.SourceSans
+statusLabel.Parent = mainFrame
+
+-- Auto-Farming Logic
+local isFarming = false
+
+-- Start Auto-Farming Function
+local function startAutoFarm()
+    if isFarming then return end
+    isFarming = true
+    statusLabel.Text = "Status: Farming..."
+    print("Auto-Farming Started")
+
+    while isFarming do
+        -- Replace with your farming logic
+        print("Performing farming tasks...")
+        wait(1) -- Simulate farming action
+    end
+end
+
+-- Stop Auto-Farming Function
+local function stopAutoFarm()
+    isFarming = false
+    statusLabel.Text = "Status: Idle"
+    print("Auto-Farming Stopped")
+end
+
+-- Connect Buttons
+startButton.MouseButton1Click:Connect(startAutoFarm)
+stopButton.MouseButton1Click:Connect(stopAutoFarm)
