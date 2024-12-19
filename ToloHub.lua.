@@ -1,33 +1,22 @@
--- ToloHub Auto-Farming Script for Blox Fruits
-
--- Check if the game is fully loaded
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-
--- Wait for necessary services
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
--- Create ScreenGui for UI
+-- Create a new ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ToloHub"
-screenGui.Parent = playerGui
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Main Frame for the GUI
+-- Create the main frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 300, 0, 400)
 mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 255) -- Blue color
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 
--- Title Label for the GUI
+-- Add a title label
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 50)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = "ToloHub"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 titleLabel.TextScaled = true
 titleLabel.Font = Enum.Font.SourceSansBold
 titleLabel.Parent = mainFrame
@@ -39,7 +28,7 @@ local function createButton(text, position, color)
     button.Position = UDim2.new(0.1, 0, position, 0)
     button.BackgroundColor3 = color
     button.Text = text
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
     button.TextScaled = true
     button.Font = Enum.Font.SourceSansBold
     button.Parent = mainFrame
@@ -50,52 +39,13 @@ end
 local startButton = createButton("Start Auto-Farm", 0.2, Color3.fromRGB(0, 170, 0))
 local stopButton = createButton("Stop Auto-Farm", 0.4, Color3.fromRGB(170, 0, 0))
 
--- Status Label for the GUI
+-- Status label
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(1, 0, 0, 50)
 statusLabel.Position = UDim2.new(0, 0, 0.8, 0)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Text = "Status: Idle"
-statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 statusLabel.TextScaled = true
 statusLabel.Font = Enum.Font.SourceSans
 statusLabel.Parent = mainFrame
-
--- Auto-farming logic
-local isFarming = false
-
--- Function to start auto-farming
-local function startAutoFarm()
-    if isFarming then return end
-    isFarming = true
-    statusLabel.Text = "Status: Farming..."
-    print("Auto-Farming Started")
-
-    while isFarming do
-        -- Make sure NPCs are in a folder named "NPCs" in workspace
-        local npcFolder = workspace:FindFirstChild("NPCs")
-        if npcFolder then
-            for _, npc in ipairs(npcFolder:GetChildren()) do
-                if npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then
-                    -- Move to NPC and "attack"
-                    player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
-                    wait(0.5)
-                    npc.Humanoid:TakeDamage(10) -- Replace this with your own attack logic
-                    print("Attacking " .. npc.Name)
-                end
-            end
-        end
-        wait(1) -- Prevent the loop from running too fast
-    end
-end
-
--- Function to stop auto-farming
-local function stopAutoFarm()
-    isFarming = false
-    statusLabel.Text = "Status: Idle"
-    print("Auto-Farming Stopped")
-end
-
--- Button Events
-startButton.MouseButton1Click:Connect(startAutoFarm)
-stopButton.MouseButton1Click:Connect(stopAutoFarm)
