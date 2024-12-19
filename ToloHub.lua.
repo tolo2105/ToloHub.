@@ -1,19 +1,20 @@
--- ToloHub: Auto-Farm Script for Codex
+-- ToloHub Auto-Farming Script for Blox Fruits
 
+-- Check if the game is fully loaded
 if not game:IsLoaded() then
-    game.Loaded:Wait() -- Ensure the game is fully loaded
+    game.Loaded:Wait()
 end
 
--- GUI Setup
+-- Wait for necessary services
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- ScreenGui
+-- Create ScreenGui for UI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ToloHub"
 screenGui.Parent = playerGui
 
--- Main Frame
+-- Main Frame for the GUI
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 300, 0, 400)
 mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
@@ -21,7 +22,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 
--- Title Label
+-- Title Label for the GUI
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 50)
 titleLabel.BackgroundTransparency = 1
@@ -31,7 +32,7 @@ titleLabel.TextScaled = true
 titleLabel.Font = Enum.Font.SourceSansBold
 titleLabel.Parent = mainFrame
 
--- Buttons
+-- Function to create buttons
 local function createButton(text, position, color)
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(0.8, 0, 0, 50)
@@ -45,10 +46,11 @@ local function createButton(text, position, color)
     return button
 end
 
+-- Create Start and Stop buttons
 local startButton = createButton("Start Auto-Farm", 0.2, Color3.fromRGB(0, 170, 0))
 local stopButton = createButton("Stop Auto-Farm", 0.4, Color3.fromRGB(170, 0, 0))
 
--- Status Label
+-- Status Label for the GUI
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(1, 0, 0, 50)
 statusLabel.Position = UDim2.new(0, 0, 0.8, 0)
@@ -59,9 +61,10 @@ statusLabel.TextScaled = true
 statusLabel.Font = Enum.Font.SourceSans
 statusLabel.Parent = mainFrame
 
--- Auto-Farming Logic
+-- Auto-farming logic
 local isFarming = false
 
+-- Function to start auto-farming
 local function startAutoFarm()
     if isFarming then return end
     isFarming = true
@@ -69,6 +72,7 @@ local function startAutoFarm()
     print("Auto-Farming Started")
 
     while isFarming do
+        -- Make sure NPCs are in a folder named "NPCs" in workspace
         local npcFolder = workspace:FindFirstChild("NPCs")
         if npcFolder then
             for _, npc in ipairs(npcFolder:GetChildren()) do
@@ -76,15 +80,16 @@ local function startAutoFarm()
                     -- Move to NPC and "attack"
                     player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                     wait(0.5)
-                    npc.Humanoid:TakeDamage(10) -- Replace this logic for your game's specific attack
+                    npc.Humanoid:TakeDamage(10) -- Replace this with your own attack logic
                     print("Attacking " .. npc.Name)
                 end
             end
         end
-        wait(1) -- Prevent overload
+        wait(1) -- Prevent the loop from running too fast
     end
 end
 
+-- Function to stop auto-farming
 local function stopAutoFarm()
     isFarming = false
     statusLabel.Text = "Status: Idle"
