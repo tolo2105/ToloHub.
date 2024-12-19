@@ -1,13 +1,19 @@
--- ToloHub: Custom Auto-Farm GUI Script
+-- ToloHub: Auto-Farm Script for Codex
+
+if not game:IsLoaded() then
+    game.Loaded:Wait() -- Ensure the game is fully loaded
+end
+
+-- GUI Setup
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Create ScreenGui
+-- ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ToloHub"
 screenGui.Parent = playerGui
 
--- Create Main Frame
+-- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 300, 0, 400)
 mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
@@ -25,27 +31,22 @@ titleLabel.TextScaled = true
 titleLabel.Font = Enum.Font.SourceSansBold
 titleLabel.Parent = mainFrame
 
--- Start Button
-local startButton = Instance.new("TextButton")
-startButton.Size = UDim2.new(0.8, 0, 0, 50)
-startButton.Position = UDim2.new(0.1, 0, 0.2, 0)
-startButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
-startButton.Text = "Start Auto-Farm"
-startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-startButton.TextScaled = true
-startButton.Font = Enum.Font.SourceSansBold
-startButton.Parent = mainFrame
+-- Buttons
+local function createButton(text, position, color)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0.8, 0, 0, 50)
+    button.Position = UDim2.new(0.1, 0, position, 0)
+    button.BackgroundColor3 = color
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextScaled = true
+    button.Font = Enum.Font.SourceSansBold
+    button.Parent = mainFrame
+    return button
+end
 
--- Stop Button
-local stopButton = Instance.new("TextButton")
-stopButton.Size = UDim2.new(0.8, 0, 0, 50)
-stopButton.Position = UDim2.new(0.1, 0, 0.4, 0)
-stopButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-stopButton.Text = "Stop Auto-Farm"
-stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-stopButton.TextScaled = true
-stopButton.Font = Enum.Font.SourceSansBold
-stopButton.Parent = mainFrame
+local startButton = createButton("Start Auto-Farm", 0.2, Color3.fromRGB(0, 170, 0))
+local stopButton = createButton("Stop Auto-Farm", 0.4, Color3.fromRGB(170, 0, 0))
 
 -- Status Label
 local statusLabel = Instance.new("TextLabel")
@@ -61,7 +62,6 @@ statusLabel.Parent = mainFrame
 -- Auto-Farming Logic
 local isFarming = false
 
--- Start Auto-Farming Function
 local function startAutoFarm()
     if isFarming then return end
     isFarming = true
@@ -69,19 +69,28 @@ local function startAutoFarm()
     print("Auto-Farming Started")
 
     while isFarming do
-        -- Replace with your farming logic
-        print("Performing farming tasks...")
-        wait(1) -- Simulate farming action
+        local npcFolder = workspace:FindFirstChild("NPCs")
+        if npcFolder then
+            for _, npc in ipairs(npcFolder:GetChildren()) do
+                if npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then
+                    -- Move to NPC and "attack"
+                    player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
+                    wait(0.5)
+                    npc.Humanoid:TakeDamage(10) -- Replace this logic for your game's specific attack
+                    print("Attacking " .. npc.Name)
+                end
+            end
+        end
+        wait(1) -- Prevent overload
     end
 end
 
--- Stop Auto-Farming Function
 local function stopAutoFarm()
     isFarming = false
     statusLabel.Text = "Status: Idle"
     print("Auto-Farming Stopped")
 end
 
--- Connect Buttons
+-- Button Events
 startButton.MouseButton1Click:Connect(startAutoFarm)
 stopButton.MouseButton1Click:Connect(stopAutoFarm)
