@@ -35,17 +35,33 @@ local function createButton(text, position, color)
     return button
 end
 
--- Create Start and Stop buttons
+-- Create Start and Stop buttons with event handling
 local startButton = createButton("Start Auto-Farm", 0.2, Color3.fromRGB(0, 170, 0))
-local stopButton = createButton("Stop Auto-Farm", 0.4, Color3.fromRGB(170, 0, 0))
+local stopButton = createButton("Stop Auto-Farm", 0.3, Color3.fromRGB(170, 0, 0))
 
 -- Status label
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(1, 0, 0, 50)
-statusLabel.Position = UDim2.new(0, 0, 0.8, 0)
+statusLabel.Position = UDim2.new(0, 0, 0.75, 0)  -- Adjusted to avoid overlap
 statusLabel.BackgroundTransparency = 1
 statusLabel.Text = "Status: Idle"
 statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 statusLabel.TextScaled = true
 statusLabel.Font = Enum.Font.SourceSans
 statusLabel.Parent = mainFrame
+
+-- Start Auto-Farm function
+local function startAutoFarm()
+    statusLabel.Text = "Status: Farming..."
+    -- Add the actual farming logic here
+end
+
+-- Stop Auto-Farm function
+local function stopAutoFarm()
+    statusLabel.Text = "Status: Idle"
+    -- Add the logic to stop farming
+end
+
+-- Connect buttons to their respective functions
+startButton.MouseButton1Click:Connect(startAutoFarm)
+stopButton.MouseButton1Click:Connect(stopAutoFarm)
