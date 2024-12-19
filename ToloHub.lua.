@@ -1,7 +1,11 @@
+-- Ensure the script waits for PlayerGui to be loaded
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
 -- Create a new ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ToloHub"
-screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+screenGui.Parent = playerGui
 
 -- Create the main frame
 local mainFrame = Instance.new("Frame")
@@ -65,3 +69,5 @@ end
 -- Connect buttons to their respective functions
 startButton.MouseButton1Click:Connect(startAutoFarm)
 stopButton.MouseButton1Click:Connect(stopAutoFarm)
+
+print("ToloHub GUI loaded!")  -- Debugging to check if script runs
